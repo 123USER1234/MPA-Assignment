@@ -1,0 +1,270 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelEncoder,StandardScaler
+from sklearn.linear_model import LinearRegression,Lasso
+from sklearn.metrics import mean_squared_error,mean_absolute_error
+from sklearn.ensemble import RandomForestRegressor
+import warnings
+warnings.filterwarnings("ignore")
+
+from google.colab import files
+uploaded = files.upload()
+
+import pandas as pd
+
+dataTrain = pd.read_csv('train.csv')
+
+dataTrain.head()
+
+type(dataTrain)  #data type
+
+dataTrain.shape # check dimension
+
+dataTest = pd.read_csv('test.csv')
+dataTest.head()
+
+dataTest.shape
+
+dataTrain.isnull().sum()
+
+dataTest.isnull().sum()
+
+dataTrain = dataTrain.dropna()
+dataTest = dataTest.dropna()
+
+dataTrain.isnull().sum()
+
+dataTrain.shape # 15 rows removed
+
+dataTest.isnull().sum()
+
+dataTest.shape  # 5 rows removed
+
+dataTrain.dtypes  # checking the data type of every column
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(10,6))
+dataTrain.corr(numeric_only=True)
+corr = dataTrain.corr(numeric_only=True)
+##This is a pandas DataFrame method that is used to calculate the correlation between variables in the DataFrame.
+sns.heatmap(corr,annot=True)
+plt.show()
+
+ dataTrain.describe() #generate various summary statistics of a DataFrame
+#Note: Only features with numeric data are considered
+
+#Search for price = 45 , if so, change the price to 451
+dataTrain.loc[dataTrain['traffic_volume'] == 45, 'traffic_volume'] = 451
+
+dataTrain.describe()  # no changes still
+
+#Search for price < 45 , if so, change the traffic volume to 451
+dataTrain.loc[dataTrain['traffic_volume'] < 45, 'traffic_volume'] = 451
+
+dataTrain.describe()  # changes done
+
+import matplotlib.pyplot as plt
+
+dataTrain['traffic_volume'].plot(kind = 'hist', bins = 5, edgecolor='black')   # 5 bins are used
+plt.xlabel('traffic volume')
+plt.ylabel('Frequency')
+plt.title('Distribution of traffic volume')
+plt.show()
+
+dataTrain.describe(include = 'object') #summary statistics for categorical values
+
+import seaborn as sns
+plt.figure(figsize=(10,6))
+sns.regplot(x="temp", y="traffic_volume", data=dataTrain)
+
+from scipy import stats
+pearson_coef, p_value = stats.pearsonr(dataTrain['temp'], dataTrain['traffic_volume'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+
+plt.figure(figsize=(10,6))
+sns.regplot(x="clouds_all", y="traffic_volume", data=dataTrain)
+
+pearson_coef, p_value = stats.pearsonr(dataTrain['clouds_all'], dataTrain['traffic_volume'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+
+plt.figure(figsize=(10,6))
+sns.regplot(x="rain_1h", y="traffic_volume", data=dataTrain)
+
+pearson_coef, p_value = stats.pearsonr(dataTrain['rain_1h'], dataTrain['traffic_volume'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+
+plt.figure(figsize=(10,6))
+sns.regplot(x="snow_1h", y="traffic_volume", data=dataTrain)
+
+pearson_coef, p_value = stats.pearsonr(dataTrain['snow_1h'], dataTrain['traffic_volume'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+
+plt.figure(figsize=(10,6))
+sns.regplot(x="month", y="traffic_volume", data=dataTrain)
+
+pearson_coef, p_value = stats.pearsonr(dataTrain['month'], dataTrain['traffic_volume'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+
+plt.figure(figsize=(10,6))
+sns.regplot(x="day", y="traffic_volume", data=dataTrain)
+
+pearson_coef, p_value = stats.pearsonr(dataTrain['day'], dataTrain['traffic_volume'])
+print("The Pearson Correlation Coefficient is", pearson_coef, " with a P-value of P =", p_value)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="temp", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="clouds_all", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="rain_1h", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="snow_1h", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="month", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="day", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="year", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="holiday", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="weather_main", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="weather_description", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="date_time", y="traffic_volume", data=dataTrain)
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="hour", y="traffic_volume", data=dataTrain)
+
+dataTrain.drop(['snow_1h', 'month','day', 'date_time', 'hour'], axis = 1, inplace = True)
+
+dataTest.drop(['snow_1h', 'month', 'day','date_time', 'hour'], axis = 1, inplace = True)
+
+dataTrain.shape
+
+dataTest.shape
+
+from sklearn.preprocessing import LabelEncoder
+
+labelencoder = LabelEncoder()
+dataTrain.temp = labelencoder.fit_transform(dataTrain.temp)
+dataTrain.rain_1h = labelencoder.fit_transform(dataTrain.rain_1h)
+dataTrain.weather_description = labelencoder.fit_transform(dataTrain.weather_description)
+dataTrain.weather_main = labelencoder.fit_transform(dataTrain.weather_main)
+dataTrain.year = labelencoder.fit_transform(dataTrain.year)
+dataTrain.holiday = labelencoder.fit_transform(dataTrain.holiday)
+
+
+labelencoder1 = LabelEncoder()
+dataTest.temp = labelencoder1.fit_transform(dataTest.temp)
+dataTest.rain_1h = labelencoder1.fit_transform(dataTest.rain_1h)
+dataTest.weather_description = labelencoder1.fit_transform(dataTest.weather_description)
+dataTest.year = labelencoder1.fit_transform(dataTest.year)
+dataTest.weather_main = labelencoder1.fit_transform(dataTest.weather_main)
+dataTest.holiday = labelencoder1.fit_transform(dataTest.holiday)
+
+dataTrain.head(10)
+
+dataTest.head(10)
+
+# Calculate the z-score from with scipy
+import scipy.stats as stats
+dataTrain = stats.zscore(dataTrain)
+dataTest = stats.zscore(dataTest)
+
+dataTrain
+
+dataTest
+
+x_train=dataTrain.iloc[:,0:6]
+y_train=dataTrain.iloc[:,7]
+
+
+
+
+x_test=dataTest.iloc[:,0:6]
+y_test=dataTest.iloc[:,7]
+
+#In case you have no separate testing data, use the following code
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size = 0.3, random_state = 0)
+#30% of the training data will be used for testing
+
+
+x_train.head()
+
+y_train.head()
+
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+pd.to_numeric(dataTrain.holiday, errors="ignore")
+
+model = LinearRegression()
+model_mlr = model.fit(x_train, y_train)
+
+y_pred1 = model_mlr.predict(x_test)
+
+
+#randomly checking the y-pred values
+y_pred1[0]
+
+mse1 = mean_squared_error(y_test, y_pred1)
+print('The mean square error for Multiple Linear Regression: ', mse1)
+
+mae1= mean_absolute_error(y_test, y_pred1)
+print('The mean absolute error for Multiple Linear Regression: ', mae1)
+
+rf = RandomForestRegressor()
+model_rf = rf.fit(x_train,y_train)
+
+y_pred2 = model_rf.predict(x_test)
+
+mse2 = mean_squared_error(y_test, y_pred2)
+print('The mean square error of price and predicted value is: ', mse2)
+
+mae2= mean_absolute_error(y_test, y_pred2)
+print('The mean absolute error of price and predicted value is: ', mae2)
+
+LassoModel = Lasso()
+model_lm = LassoModel.fit(x_train,y_train)
+
+y_pred3 = model_lm.predict(x_test)
+
+mae3= mean_absolute_error(y_test, y_pred3)
+print('The mean absolute error of price and predicted value is: ', mae3)
+
+mse3 = mean_squared_error(y_test, y_pred3)
+print('The mean square error of price and predicted value is: ', mse3)
+
+scores = [('MLR', mae1),
+          ('Random Forest', mae2),
+          ('LASSO', mae3)
+         ]
+
+mae = pd.DataFrame(data = scores, columns=['Model', 'MAE Score'])
+mae
+
+mae.sort_values(by=(['MAE Score']), ascending=False, inplace=True)
+
+f, axe = plt.subplots(1,1, figsize=(10,7))
+sns.barplot(x = mae['Model'], y=mae['MAE Score'], ax = axe)
+axe.set_xlabel('Model', size=20)
+axe.set_ylabel('Mean Absolute Error', size=20)
+
+plt.show()
+
